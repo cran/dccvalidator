@@ -231,6 +231,15 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <li>Be a member of the <a href="https://www.synapse.org/#!Team:3323356">PEC team</a></li>
 </ol>
 <p>Some portions of the app submit data to Synapse. This allows curators at Sage to troubleshoot issues if needed. No one outside the Sage curation team will be able to download the data.</p>
+<div id="data-submission-agreement" class="section level2">
+<h2>Data Submission Agreement</h2>
+<p>In order to contribute data to the PsychENCODE Knowledge Portal, <a href="https://www.synapse.org/#!Synapse:syn18420555">signing this agreement</a> is required for each data set. In this agreement, you will acknowledge:</p>
+<ul>
+<li><p>You are the expert of the content of your data! As a data contributor, you are responsible for ensuring your data is compliant with relevant policies and does not disclose the identity of research participants.</p></li>
+<li><p>If you discover you have released sensitive information in error, please follow the <a href="https://docs.synapse.org/articles/contribute_and_access_controlled_use_data.html#flagging-inappropriate-data-use">process in Synapse to flag</a> affected data.</p></li>
+<li><p>We are also interested in rapidly identifiying data that does not conform to our quality control standards. If you discover data is contaminated or sample identity is questionable due to a concordance analysis, for example, please reach out to the curation team -<a href="mailto:PEC__SageAdmin@synapse.org">PEC_SageAdmin@synaspse.org</a>.</p></li>
+</ul>
+</div>
 <div id="terminology" class="section level2">
 <h2>Terminology</h2>
 <div id="what-is-a-biospecimen" class="section level4">
@@ -305,7 +314,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 <div id="uploading-data-to-synapse-after-validation" class="section level2">
 <h2>Uploading data to Synapse after validation</h2>
-<p>Once data has passed validation and the PEC data curators permit edit permissions to the <strong>Staging</strong> folder, data may be uploaded. Bulk file upload is achievable using the <a href="https://docs.synapse.org/articles/files_and_versioning.html">web UI</a> or the <a href="https://docs.synapse.org/articles/uploading_in_bulk.html">R, Python and command line clients</a>.</p>
+<p>Once data has passed validation, and the PEC data curators permit edit permissions to the <strong>Staging</strong> folder, you will use your newly created manifest file to upload data using <code>syncToSynapse</code>. You can execute <code>syncToSynapse</code> in the <a href="https://python-docs.synapse.org/build/html/synapseutils.html#synapseutils.sync.syncToSynapse">Python client</a> and <a href="https://github.com/Sage-Bionetworks/synapserutils#upload-data-in-bulk">R client</a>. For getting started with the Synapse programmatic clients, please visit our <a href="https://docs.synapse.org/articles/api_documentation.html">Synapse docs</a>.</p>
 </div>
 <div id="data-release" class="section level2">
 <h2>Data Release</h2>

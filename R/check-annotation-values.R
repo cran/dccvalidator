@@ -287,14 +287,21 @@ check_type <- function(values, key, annotations, whitelist_values = NULL,
 #' in R's built-in coercion functions (e.g. `as.numeric()` warns when it
 #' introduces NAs but `as.logical()` doesn't; `as.integer()` will silently
 #' remove decimal places from numeric inputs) we check only for the specific
-#' coercions we want to allow, currently: numeric, integer, or logical to string
+#' coercions we want to allow, primarily allowing numeric, integer, or logical
+#' values to be considered valid even when the required type is character.
 #'
 #' This function is mainly in place so that we can automatically allow numeric
 #' read lengths, pH values, etc., which are defined as strings in our annotation
 #' vocabulary but can reasonably be numbers.
 #'
-#' This function will also return `TRUE` if the values are integers and the
-#' desired class is numeric.
+#' Additionally, this function will return `TRUE` if the values are integers and
+#' the desired class is numeric, and will return `TRUE` if the values are
+#' numeric but are whole numbers. `2.0` is considered coercible to integer, but
+#' `2.1` is not.
+#'
+#' It will also allow the following capitalizations of boolean values: true,
+#' True, TRUE, false, False, FALSE. These are all treated as valid booleans by
+#' Synapse.
 #'
 #' This function will *not* affect validation of enumerated values, regardless
 #' of their class. It is only used when validating annotations that have a
@@ -314,6 +321,7 @@ check_type <- function(values, key, annotations, whitelist_values = NULL,
 #' can_coerce(TRUE, "character")
 #' can_coerce(1L, "character")
 #' can_coerce(1L, "numeric")
+#' can_coerce(1.0, "integer")
 #'
 #' # Not coercible:
 #' can_coerce("foo", "numeric")
@@ -321,12 +329,31 @@ check_type <- function(values, key, annotations, whitelist_values = NULL,
 #' can_coerce(2.5, "integer")
 #' }
 can_coerce <- function(values, class) {
-  if (class == "character" &
+  ## If the values are already the correct class, then obviously the answer
+  ## should be yes
+  if (inherits(values, class)) {
+    return(TRUE)
+  }
+
+  if (class == "character" &&
     (inherits(values, "numeric") | inherits(values, "integer") |
-      inherits(values, "logical"))) {
+      inherits(values, "logical") | inherits(values, "factor"))) {
+    ## Anything is coercible to character
     return(TRUE)
-  } else if (class == "numeric" & inherits(values, "integer")) {
+  } else if (class == "numeric" && inherits(values, "integer")) {
+    ## Integers are coercible to numeric
     return(TRUE)
+  } else if (class == "integer" && inherits(values, "numeric") &&
+               isTRUE(all.equal(values, as.integer(values)))) {
+    ## Whole numbers are coercible to integers
+    return(TRUE)
+  } else if (class == "logical") {
+    if (all(values %in% c("true", "True", "TRUE", "false", "False", "FALSE"))) {
+      ## All capitalizations of logicals are valid
+      return(TRUE)
+    } else {
+      return(FALSE)
+    }
   } else {
     return(FALSE)
   }
@@ -389,6 +416,8 @@ check_value <- function(values, key, annotations, whitelist_keys = NULL,
 #' @param fail_msg Message indicating the check failed.
 #' @param return_valid Should the function return valid values? Defaults to
 #'   `FALSE` (i.e. the function will return invalid values).
+#' @param annots_link Link to a definition of the annotations being used in the
+#'   project
 #' @return If `return_valid = FALSE`: a condition object indicating whether all
 #'   annotation values are valid. Invalid annotation values are included as data
 #'   within the object: a named list where each element corresponds to a key
@@ -412,7 +441,9 @@ check_values <- function(x, annotations, whitelist_keys = NULL,
                          whitelist_values = NULL,
                          success_msg = "All annotation values are valid",
                          fail_msg = "Some annotation values are invalid",
-                         return_valid = FALSE, syn) {
+                         return_valid = FALSE,
+                         annots_link = "https://shinypro.synapse.org/users/nsanati/annotationUI/", # nolint
+                         syn) {
   if (length(names(x)) == 0) {
     stop("No annotations present to check", call. = FALSE)
   }
@@ -437,7 +468,7 @@ check_values <- function(x, annotations, whitelist_keys = NULL,
   if (isTRUE(return_valid)) {
     return(values)
   }
-  behavior <- "All annotation values should conform to the vocabulary. Refer to the <a target=\"_blank\" href=\"https://shinypro.synapse.org/users/nsanati/annotationUI/\">annotation dictionary</a> for accepted values." # nolint
+  behavior <- glue::glue("All annotation values should conform to the vocabulary. Refer to the <a target=\"_blank\" href=\"{annots_link}\">annotation dictionary</a> for accepted values.") # nolint
   if (length(values) == 0) {
     check_pass(
       msg = success_msg,
