@@ -237,6 +237,21 @@ check_all <- function(data, annotations, syn) {
     fail_msg = "Manifest file does not contain all metadata files"
   )
 
+  # Parent column in manifest is valid synID -----------------------------------
+  valid_parent_syn <- check_parent_syn(data$file_data[manifest_index][[1]])
+
+  # Ages over 90 are censored in human individual metadata ---------------------
+  if (any(data$species == "human", na.rm = TRUE)) {
+    ages_over_90 <- check_ages_over_90(data$file_data[indiv_index][[1]])
+  } else {
+    ages_over_90 <- NULL
+  }
+
+  # No file paths are duplicated in the manifest -------------------------------
+  duplicate_file_paths <- check_duplicate_paths(
+    data$file_data[manifest_index][[1]]
+  )
+
   ## List results
   res <- list(
     missing_cols_indiv = missing_cols_indiv,
@@ -262,7 +277,10 @@ check_all <- function(data, annotations, syn) {
     complete_cols_indiv = complete_cols_indiv,
     complete_cols_biosp = complete_cols_biosp,
     complete_cols_assay = complete_cols_assay,
-    meta_files_in_manifest = meta_files_in_manifest
+    meta_files_in_manifest = meta_files_in_manifest,
+    valid_parent_syn = valid_parent_syn,
+    ages_over_90 = ages_over_90,
+    duplicate_file_paths = duplicate_file_paths
   )
   res
 }

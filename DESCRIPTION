@@ -1,6 +1,6 @@
 Package: dccvalidator
 Title: Metadata Validation for Data Coordinating Centers
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     c(person(given = "Kara",
              family = "Woo",
@@ -40,7 +40,7 @@ LazyData: true
 RoxygenNote: 7.0.2
 SystemRequirements: synapseclient (pypi.org/project/synapseclient)
 NeedsCompilation: no
-Packaged: 2020-03-12 19:29:49 UTC; aryllen
+Packaged: 2020-06-19 00:24:48 UTC; aryllen
 Author: Kara Woo [aut],
   Sage Bionetworks [cph],
   Nicole Kauer [aut, cre],
@@ -48,4 +48,4 @@ Author: Kara Woo [aut],
   Dean Attali [cph]
 Maintainer: Nicole Kauer <nicole.kauer@sagebase.org>
 Repository: CRAN
-Date/Publication: 2020-03-13 00:20:02 UTC
+Date/Publication: 2020-06-19 04:40:02 UTC
